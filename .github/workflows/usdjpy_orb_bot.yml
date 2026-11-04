@@ -1,0 +1,60 @@
+name: USD/JPY ORB Bot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: usdjpy-orb
+  cancel-in-progress: false
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run bot
+        env:
+          CAPITAL_API_KEY: ${{ secrets.CAPITAL_API_KEY }}
+          CAPITAL_IDENTIFIER: ${{ secrets.CAPITAL_IDENTIFIER }}
+          CAPITAL_PASSWORD: ${{ secrets.CAPITAL_PASSWORD }}
+          PAIR_EPIC: "USDJPY"          # confirm via --find-epic first, update if different
+          PAIR_NAME: "USD/JPY"
+          STATE_FILE: "usdjpy_orb_state.json"
+          RANGE_MINUTES: "15"
+          TP_MULTIPLE: "1.5"
+          UNITS: "2000"
+          TP_PROFIT_USD: "1"
+          SL_LOSS_USD: "0.6"
+          SESSION_TZ: "Europe/London"   # handles winter/summer time automatically
+          SESSION_OPEN: "08:00"         # local time of the range start
+          ORDER_WINDOW_MINUTES: "60"    # latest time to place orders after the range ends
+          CLOSE_AFTER_HOURS: "8"        # close everything this long after session open
+        run: python forex_orb_bot.py --once --place-orders
+
+      - name: Persist bot state
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain usdjpy_orb_state.json)" ]; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add usdjpy_orb_state.json
+            git commit -m "Update usdjpy_orb_state.json [skip ci]"
+            for i in 1 2 3 4 5; do
+              git pull --rebase && git push && break
+              echo "Push failed, retrying ($i)..."
+              sleep 5
+            done
+          else
+            echo "No state change, skipping commit."
+          fi
