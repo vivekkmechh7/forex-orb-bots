@@ -255,12 +255,25 @@ def place_orders(api, cfg, state, open_utc, place):
 
     if width_pips < cfg["min_range_pips"] or width_pips > cfg["max_range_pips"]:
         log("Range outside MIN/MAX_RANGE_PIPS, skipping today")
-        state.update(status="skipped", reason="range size")
+        if place:
+            state.update(status="skipped", reason="range size")
         return
 
     buf = cfg["buffer_pips"] * pip
     buy_entry = round(high + buf, dp)
     sell_entry = round(low - buf, dp)
+
+    # A BUY stop must sit above the current offer and a SELL stop below the current bid.
+    # If price already left the range, the broker rejects the order, so skip the day.
+    snap = mkt.get("snapshot", {})
+    bid, offer = snap.get("bid"), snap.get("offer")
+    if bid is not None and offer is not None:
+        log(f"Current price: bid {bid} / offer {offer}")
+        if offer >= buy_entry or bid <= sell_entry:
+            log("Price already broke out of the range before orders were placed, skipping today")
+            if place:
+                state.update(status="skipped", reason="breakout already happened")
+            return
 
     if cfg["tp_usd"] and cfg["sl_usd"]:
         tp_dist = usd_to_price_distance(cfg["tp_usd"], cfg["units"], buy_entry, cfg["name"])
@@ -410,3 +423,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
