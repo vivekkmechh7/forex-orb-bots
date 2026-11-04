@@ -36,10 +36,10 @@ jobs:
           UNITS: "2000"
           TP_PROFIT_USD: "1"
           SL_LOSS_USD: "0.6"
-          SESSION_TZ: "Europe/London"   # handles winter/summer time automatically
-          SESSION_OPEN: "08:00"         # local time of the range start
-          ORDER_WINDOW_MINUTES: "60"    # latest time to place orders after the range ends
-          CLOSE_AFTER_HOURS: "8"        # close everything this long after session open
+          SESSION_TZ: "Europe/London"
+          SESSION_OPEN: "08:00"
+          ORDER_WINDOW_MINUTES: "60"
+          CLOSE_AFTER_HOURS: "6"
         run: python forex_orb_bot.py --once --place-orders
 
       - name: Persist bot state
