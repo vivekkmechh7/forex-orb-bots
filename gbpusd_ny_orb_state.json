@@ -1,4 +1,8 @@
 {
+  "buy_deal": "00000000-70b1-f1d5-0493-5c3e0055311e",
   "date": "2026-11-04",
-  "status": "new"
+  "range_high": 1.349095,
+  "range_low": 1.3477649999999999,
+  "sell_deal": "00000000-70b1-f200-0493-5c3e0055311e",
+  "status": "orders_placed"
 }
