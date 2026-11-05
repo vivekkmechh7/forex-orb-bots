@@ -1,0 +1,72 @@
+name: NY ORB Bot (USDJPY + GOLD)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ny-orb
+  cancel-in-progress: false
+
+env:
+  CAPITAL_API_KEY: ${{ secrets.CAPITAL_API_KEY }}
+  CAPITAL_IDENTIFIER: ${{ secrets.CAPITAL_IDENTIFIER }}
+  CAPITAL_PASSWORD: ${{ secrets.CAPITAL_PASSWORD }}
+  SESSION_TZ: "America/New_York"
+  SESSION_OPEN: "08:00"
+  RANGE_MINUTES: "30"
+  TP_MULTIPLE: "3.0"
+  ORDER_WINDOW_MINUTES: "30"
+  ORDER_EXPIRY_MINUTES: "60"
+  CLOSE_AFTER_HOURS: "6"
+  RISK_PERCENT: "0.5"
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: USDJPY
+        if: always()
+        env:
+          PAIR_EPIC: "USDJPY"
+          PAIR_NAME: "USD/JPY"
+          STATE_FILE: "ny_orb_usdjpy_state.json"
+          LOG_FILE: "ny_orb_usdjpy_log.csv"
+        run: python ny_orb_bot.py --once --place-orders
+
+      - name: GOLD
+        if: always()
+        env:
+          PAIR_EPIC: "GOLD"
+          PAIR_NAME: "GOLD"
+          STATE_FILE: "ny_orb_gold_state.json"
+          LOG_FILE: "ny_orb_gold_log.csv"
+        run: python ny_orb_bot.py --once --place-orders
+
+      - name: Persist state and log
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain ny_orb_*_state.json ny_orb_*_log.csv)" ]; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add ny_orb_*_state.json ny_orb_*_log.csv
+            git commit -m "Update NY ORB state [skip ci]"
+            for i in 1 2 3 4 5; do
+              git pull --rebase && git push && break
+              echo "Push failed, retrying ($i)..."
+              sleep 5
+            done
+          else
+            echo "No change, skipping commit."
+          fi
