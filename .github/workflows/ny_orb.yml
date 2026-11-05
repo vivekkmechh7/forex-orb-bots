@@ -57,16 +57,18 @@ jobs:
       - name: Persist state and log
         if: always()
         run: |
-          if [ -n "$(git status --porcelain ny_orb_*_state.json ny_orb_*_log.csv)" ]; then
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
-            git add ny_orb_*_state.json ny_orb_*_log.csv
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          for f in ny_orb_usdjpy_state.json ny_orb_gold_state.json ny_orb_usdjpy_log.csv ny_orb_gold_log.csv; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --cached --quiet; then
+            echo "No change, skipping commit."
+          else
             git commit -m "Update NY ORB state [skip ci]"
             for i in 1 2 3 4 5; do
               git pull --rebase && git push && break
               echo "Push failed, retrying ($i)..."
               sleep 5
             done
-          else
-            echo "No change, skipping commit."
           fi
