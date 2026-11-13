@@ -1,4 +1,7 @@
 {
+  "atr15": 0.0688,
   "date": "2026-11-13",
-  "status": "new"
+  "range_width": 0.137,
+  "reason": "breakout already happened",
+  "status": "skipped"
 }
