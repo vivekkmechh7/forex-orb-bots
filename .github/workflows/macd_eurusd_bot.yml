@@ -1,0 +1,51 @@
+name: MACD EURUSD Bot
+
+# Triggered only by cron-job.org (workflow_dispatch), like the ORB bots - no native schedule block.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: macd-eurusd-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pandas requests
+
+      - name: Run MACD EURUSD bot
+        env:
+          CAPITAL_API_KEY: ${{ secrets.CAPITAL_API_KEY }}
+          CAPITAL_IDENTIFIER: ${{ secrets.CAPITAL_IDENTIFIER }}
+          CAPITAL_PASSWORD: ${{ secrets.CAPITAL_PASSWORD }}
+          PAIR_EPIC: EURUSD
+          STATE_FILE: macd_eurusd_state.json
+          RISK_USD: "2"          # about 1% of a 200 USD account; use 5 for 500 USD
+          MAX_UNITS: "20000"
+          MAX_SPREAD_PIPS: "2.0"
+          MAX_LATE_MIN: "10"
+        run: python macd_eurusd_bot.py --once --place-orders
+
+      - name: Persist state
+        if: always()
+        run: |
+          git config user.name "macd-bot"
+          git config user.email "macd-bot@users.noreply.github.com"
+          git add macd_eurusd_state.json || true
+          if git diff --cached --quiet; then echo "no state change"; exit 0; fi
+          git commit -m "macd bot state [skip ci]"
+          for i in 1 2 3 4; do
+            git pull --rebase origin main && git push origin HEAD:main && break || sleep 3
+          done
