@@ -5,3 +5,4 @@ date,pair,status,reason,range_width,atr15,size,risk_usd
 2026-11-11,USD/JPY,done,,0.191,0.0671,3800.0,4.7
 2026-11-12,USD/JPY,done,,0.218,0.0827,3400.0,4.77
 2026-11-13,USD/JPY,skipped,breakout already happened,0.137,0.0688,,
+2026-11-16,USD/JPY,done,,0.176,0.0939,4200.0,4.79
