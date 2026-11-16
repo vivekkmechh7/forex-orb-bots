@@ -1,5 +1,8 @@
 {
-  "date": "2026-11-13",
-  "reason": "breakout already happened",
-  "status": "skipped"
+  "buy_deal": "00000000-7373-a22b-0493-56500055311e",
+  "date": "2026-11-16",
+  "range_high": 1.320715,
+  "range_low": 1.3201749999999999,
+  "sell_deal": "00000000-7373-a234-0493-56500055311e",
+  "status": "orders_placed"
 }
