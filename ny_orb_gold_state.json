@@ -1,4 +1,12 @@
 {
+  "atr15": 6.299,
+  "buy_deal": "00000000-7434-84d8-0493-56500055311e",
   "date": "2026-11-17",
-  "status": "new"
+  "range_high": 3864.63,
+  "range_low": 3853.12,
+  "range_width": 11.51,
+  "risk_usd": 4.7,
+  "sell_deal": "00000000-7434-84f4-0493-56500055311e",
+  "size": 0.4,
+  "status": "orders_placed"
 }
