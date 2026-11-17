@@ -6,3 +6,4 @@ date,pair,status,reason,range_width,atr15,size,risk_usd
 2026-11-12,GOLD,skipped,range vs ATR,42.97,9.571,,
 2026-11-13,GOLD,skipped,breakout already happened,12.73,6.144,,
 2026-11-16,GOLD,done,,13.21,7.499,0.35,4.71
+2026-11-17,GOLD,done,,11.51,6.299,0.4,4.7
