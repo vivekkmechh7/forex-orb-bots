@@ -335,12 +335,35 @@ def place_orders(api, cfg, state, open_utc, range_end, place):
         log("SELL order failed, cancelling BUY order")
         api.delete_order(buy_id)
         raise
-    state.update(status="orders_placed", range_high=high, range_low=low, buy_deal=buy_id, sell_deal=sell_id)
+    state.update(status="orders_placed", range_high=high, range_low=low, buy_deal=buy_id, sell_deal=sell_id,
+                 buy_sl=buy_sl, buy_tp=buy_tp, sell_sl=sell_sl, sell_tp=sell_tp)
+
+
+def _close(a, b):
+    return a is not None and b is not None and abs(float(a) - float(b)) <= 0.0006
+
+
+def is_own_position(p, state):
+    """A position belongs to this bot if it came from one of our working orders, or carries exactly our SL and TP."""
+    placed = {state.get("buy_deal"), state.get("sell_deal")} - {None}
+    if p.get("workingOrderId") in placed or p.get("dealId") in placed:
+        return True
+    d = (p.get("direction") or "").upper()
+    if d == "BUY":
+        return _close(p.get("stopLevel"), state.get("buy_sl")) and _close(p.get("profitLevel"), state.get("buy_tp"))
+    if d == "SELL":
+        return _close(p.get("stopLevel"), state.get("sell_sl")) and _close(p.get("profitLevel"), state.get("sell_tp"))
+    return False
 
 
 def manage(api, cfg, state, now, close_time):
-    positions = api.positions(cfg["epic"])
-    orders = api.working_orders(cfg["epic"])
+    # other bots trade the same epic on this account: only ever touch our own orders and positions
+    placed_ids = {state.get("buy_deal"), state.get("sell_deal")} - {None}
+    all_positions = api.positions(cfg["epic"])
+    positions = [p for p in all_positions if is_own_position(p, state)]
+    orders = [o for o in api.working_orders(cfg["epic"]) if o.get("dealId") in placed_ids]
+    if len(all_positions) != len(positions):
+        log(f"Ignoring {len(all_positions) - len(positions)} position(s) on {cfg['epic']} that belong to other bots")
 
     if now >= close_time:
         log("Session time limit reached, closing everything")
