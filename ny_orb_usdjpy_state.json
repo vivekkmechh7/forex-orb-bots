@@ -12,5 +12,5 @@
   "sell_sl": 159.102,
   "sell_tp": 158.76,
   "size": 8200.0,
-  "status": "orders_placed"
+  "status": "in_trade"
 }
