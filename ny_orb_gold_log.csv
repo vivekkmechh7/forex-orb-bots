@@ -13,3 +13,4 @@ date,pair,status,reason,range_width,atr15,size,risk_usd
 2026-11-23,GOLD,done,,17.51,8.057,0.26,4.62
 2026-11-24,GOLD,done,,17.78,9.565,0.25,4.51
 2026-11-25,GOLD,skipped,breakout already happened,25.38,11.795,,
+2026-11-26,GOLD,done,,12.6,8.327,0.36,4.63
