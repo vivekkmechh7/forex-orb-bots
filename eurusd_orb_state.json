@@ -1,8 +1,8 @@
 {
-  "buy_deal": "00000000-7675-eeb7-0493-5c3e0055311e",
-  "date": "2026-11-25",
-  "range_high": 1.0941049999999999,
-  "range_low": 1.093235,
-  "sell_deal": "00000000-7675-eec3-0493-5c3e0055311e",
-  "status": "done"
+  "buy_deal": "00000000-76e7-d9ce-0493-5c3e0055311e",
+  "date": "2026-11-26",
+  "range_high": 1.098025,
+  "range_low": 1.097175,
+  "sell_deal": "00000000-76e7-da04-0493-5c3e0055311e",
+  "status": "orders_placed"
 }
