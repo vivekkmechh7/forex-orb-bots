@@ -1,16 +1,4 @@
 {
-  "atr15": 8.327,
-  "buy_deal": "00000000-7727-27b4-0493-5c3e0055311e",
-  "buy_sl": 3562.82,
-  "buy_tp": 3613.47,
-  "date": "2026-11-26",
-  "range_high": 3575.42,
-  "range_low": 3562.82,
-  "range_width": 12.6,
-  "risk_usd": 4.63,
-  "sell_deal": "00000000-7727-27c6-0493-5c3e0055311e",
-  "sell_sl": 3575.42,
-  "sell_tp": 3524.77,
-  "size": 0.36,
-  "status": "done"
+  "date": "2026-11-27",
+  "status": "new"
 }
